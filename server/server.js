@@ -17,6 +17,11 @@ app.get('/posts/:id', function (req, res) {
     res.send(posts[req.params.id % posts.length]);
 });
 
+app.use(function (req, res, next) {
+    res.status(404)
+    res.send("Not found at " + req.url);
+});
+
 var server = app.listen(3000, function () {
     var host = server.address().address;
     var port = server.address().port;
