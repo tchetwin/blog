@@ -1,21 +1,42 @@
 var express = require('express');
+
+var bodyParser = require('body-parser');
 var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-var posts = [
-    { title: "Hello dawg", text: "Lol u reek"},
-    { title: "Dingus"    , text: "Lol u reek" },
-    { title: "Weiner"    , text: "Lol u reek" },
-    { title: "Cats"      , text: "Lol u reek" },
-];
-
+var posts = require('./posts.js');
 
 app.get('/posts', function (req, res) {
-    res.send(posts);
+    posts.getAll(function (err, blogPosts) {
+	if (err) {
+            console.error("TODO: Return error when can't getAll");
+	}
+        console.log(blogPosts);
+        res.send(blogPosts);
+    });
 });
 
-app.get('/posts/:id', function (req, res) {
-    res.send(posts[req.params.id % posts.length]);
+app.post('/post', function (req, res) {
+    var title = req.body.title;
+    var text = req.body.text;
+
+    posts.add(title, text, function (err) {
+	if (err) {
+            console.error("TODO: Return error when can't add");
+	}
+        console.log("Success");
+	res.send();
+    });
 });
+
+// app.get('/posts/:title/:text', function (req, res) {
+//     var title = req.params.title;
+//     var text = req.params.text;
+//     posts.add(title, text);
+//     res.send("Dun");
+//     // res.send(blogPosts[req.params.id % blogPosts.length]);
+// });
 
 app.use(function (req, res, next) {
     res.status(404)
